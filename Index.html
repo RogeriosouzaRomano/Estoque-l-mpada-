@@ -1,5 +1,29 @@
 
+<?php
+include 'conexao.php';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['adicionar'])) {
+        $tipo = $_POST['tipo'];
+        $potencia = $_POST['potencia'];
+        $cor = $_POST['cor'];
+        $quantidade = $_POST['quantidade'];
+
+        $sql = "INSERT INTO lampadas (tipo, potencia, cor, quantidade) VALUES ('$tipo', '$potencia', '$cor', '$quantidade')";
+        if ($conn->query($sql) === TRUE) {
+            echo "Nova lâmpada adicionada com sucesso";
+        } else {
+            echo "Erro: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    if (isset($_POST['pesquisar'])) {
+        $pesquisa = $_POST['pesquisa'];
+        $sql = "SELECT * FROM lampadas WHERE tipo LIKE '%$pesquisa%' OR potencia LIKE '%$pesquisa%' OR cor LIKE '%$pesquisa%'";
+        $result = $conn->query($sql);
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
