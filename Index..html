@@ -1,0 +1,65 @@
+<?php
+include 'conexao.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['adicionar'])) {
+        $tipo = $_POST['tipo'];
+        $potencia = $_POST['potencia'];
+        $cor = $_POST['cor'];
+        $quantidade = $_POST['quantidade'];
+
+        $sql = "INSERT INTO lampadas (tipo, potencia, cor, quantidade) VALUES ('$tipo', '$potencia', '$cor', '$quantidade')";
+        if ($conn->query($sql) === TRUE) {
+            echo "Nova lâmpada adicionada com sucesso";
+        } else {
+            echo "Erro: " . $sql . "<br>" . $conn->error;
+        }
+    }
+
+    if (isset($_POST['pesquisar'])) {
+        $pesquisa = $_POST['pesquisa'];
+        $sql = "SELECT * FROM lampadas WHERE tipo LIKE '%$pesquisa%' OR potencia LIKE '%$pesquisa%' OR cor LIKE '%$pesquisa%'";
+        $result = $conn->query($sql);
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gerenciamento de Estoque de Lâmpadas</title>
+</head>
+<body>
+    <h1>Gerenciamento de Estoque de Lâmpadas</h1>
+    
+    <h2>Adicionar Lâmpada</h2>
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+        Tipo: <input type="text" name="tipo"><br><br>
+        Potência: <input type="text" name="potencia"><br><br>
+        Cor: <input type="text" name="cor"><br><br>
+        Quantidade: <input type="number" name="quantidade"><br><br>
+        <input type="submit" name="adicionar" value="Adicionar Lâmpada">
+    </form>
+
+    <h2>Pesquisar Estoque</h2>
+    <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+        Pesquisar: <input type="text" name="pesquisa"><br><br>
+        <input type="submit" name="pesquisar" value="Pesquisar">
+    </form>
+
+    <?php
+    if (isset($result) && $result->num_rows > 0) {
+        echo "<h2>Resultados da Pesquisa</h2>";
+        echo "<table border='1'><tr><th>ID</th><th>Tipo</th><th>Potência</th><th>Cor</th><th>Quantidade</th></tr>";
+        while($row = $result->fetch_assoc()) {
+            echo "<tr><td>".$row["id"]."</td><td>".$row["tipo"]."</td><td>".$row["potencia"]."</td><td>".$row["cor"]."</td><td>".$row["quantidade"]."</td></tr>";
+        }
+        echo "</table>";
+    } elseif (isset($result)) {
+        echo "Nenhum resultado encontrado.";
+    }
+    ?>
+
+    <?php $conn->close(); ?>
+</body>
+</html>
